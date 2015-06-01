@@ -3,8 +3,8 @@
  * Plugin Name: Video Metabox
  * Plugin URI: http://wordpress.org/support/plugin/video-metabox
  * Description: Adds a video metabox to blog posts and pages.
- * Version: 1.2.5
- * Author: Jesse Overright
+ * Version: 1.2.6a
+ * Author: Jesse Overright, baden03
  * Author URI: http://jesseoverright.com
  * License: GPL2
  */
@@ -131,17 +131,19 @@ function video_metabox_init() {
 
         public function save( $post_id ) {
 
-            if ( !wp_verify_nonce( $_POST[ $this->key . '_nonce'], $this->key . '_save' ) )
+            if ( !empty( $_POST[ $this->key . '_nonce'] ) && !wp_verify_nonce( $_POST[ $this->key . '_nonce'], $this->key . '_save' ) )
                 return $post_id;
 
-            $this->metadata['video_url']->update( $post_id, $_POST['video_url'] );
+            if( !empty($_POST['video_url']) ){
+                $this->metadata['video_url']->update( $post_id, $_POST['video_url'] );
 
-            // srape url for video id & type
-            $video_details = $this->scrape_url( get_post_meta( $post_id, 'video_url', true ) );
+                // srape url for video id & type
+                $video_details = $this->scrape_url( get_post_meta( $post_id, 'video_url', true ) );
 
-            $this->metadata['video_id']->update( $post_id, $video_details[ 'video_id' ] );
+                $this->metadata['video_id']->update( $post_id, $video_details[ 'video_id' ] );
 
-            $this->metadata['video_type']->update( $post_id, $video_details[ 'video_type' ] );
+                $this->metadata['video_type']->update( $post_id, $video_details[ 'video_type' ] );
+            }
 
         }
 
